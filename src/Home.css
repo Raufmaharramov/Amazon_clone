@@ -1,6 +1,10 @@
 .home__image {
+  /* fit in the page */
   width: 100%;
+  /* this tells that everything will be on the top of this element */
   z-index: -1;
+  /* some elements will be pasted on this elements from the bottom */
   margin-bottom: -150px;
+  /* this line is to make that gradual sink in color in the background */
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
 }
