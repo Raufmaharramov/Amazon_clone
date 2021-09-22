@@ -1,3 +1,19 @@
+/* this makes sure that images on the string doesn't strech out as the screen size changes */
+.home {
+  display: flex;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1500px;
+}
+/* this is a container that holds pics of products */
+.home__row {
+  display: flex;
+  z-index: 1;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
 .home__image {
   /* fit in the page */
   width: 100%;
@@ -7,4 +23,7 @@
   margin-bottom: -150px;
   /* this line is to make that gradual sink in color in the background */
   mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
+}
+
+.home__container {
 }
