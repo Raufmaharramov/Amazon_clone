@@ -6,12 +6,17 @@ import CheckoutProduct from "./CheckoutProduct";
 import "./Payment.css";
 import { getBasketTotal } from "./reducer";
 import { useStateValue } from "./StateProvider";
-import axios from "axios";
+import axios from "./axios";
 import { useHistory } from "react-router-dom";
+import { db } from "./firebase";
 
 function Payment() {
   const [{ basket, user }, dispatch] = useStateValue();
   const history = useHistory();
+
+  const stripe = useStripe();
+  const elements = useElements();
+
   const [error, setError] = useState(null);
   const [disabled, setDisabled] = useState(true);
   const [succeeded, setSucceeded] = useState(false);
@@ -25,15 +30,14 @@ function Payment() {
       const response = await axios({
         method: "post",
         // Stripe expects the total in a currencies subunits
-        url: `/payment/create?total=${getBasketTotal(basket) * 100}`
+        url: `/payments/create?total=${getBasketTotal(basket) * 100}`
       });
       setClientSecret(response.data.clientSecret);
     };
     getClientSecret();
   }, [basket]);
 
-  const stripe = useStripe();
-  const elements = useElements();
+  console.log("The Secret is>>>", clientSecret);
 
   const handleSubmit = async e => {
     // Stripe functinality
@@ -49,11 +53,22 @@ function Payment() {
       })
       .then(({ paymentIntent }) => {
         // paymentIntent = payment confirmation
+        db.collection("users").doc(user?.uid).collection("orders").doc(paymentIntent.id).set({
+          basket: basket,
+          amount: paymentIntent.amount,
+          created: paymentIntent.created
+        });
+
         setSucceeded(true);
         setError(null);
         setProcessing(false);
         // history.replace we do because we don't wont
         // them to be able to go back to the same payment page after payment is done
+
+        dispatch({
+          type: "EMPTY_BASKET"
+        });
+
         history.replace("/orders");
       });
   };
